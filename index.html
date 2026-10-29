@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Furnace Hosting - Kendi Minecraft Sunucunu Tek Tıkla Kur</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #ff6b00;
+      --primary-hover: #ff8533;
+      --primary-glow: rgba(255, 107, 0, 0.45);
+      --accent-blue: #3b82f6;
+      --bg-dark: #0a0d14;
+      --bg-card: rgba(18, 22, 34, 0.75);
+      --border-card: rgba(255, 255, 255, 0.08);
+      --border-glow: rgba(255, 107, 0, 0.3);
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Arka plan parlama efektleri */
+    .bg-blobs {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 100%;
+      overflow: hidden;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .blob-1 {
+      position: absolute;
+      top: -150px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 650px;
+      height: 450px;
+      background: radial-gradient(circle, rgba(255, 107, 0, 0.22) 0%, rgba(10, 13, 20, 0) 70%);
+      filter: blur(80px);
+    }
+
+    .blob-2 {
+      position: absolute;
+      top: 350px;
+      right: -100px;
+      width: 450px;
+      height: 450px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, rgba(10, 13, 20, 0) 70%);
+      filter: blur(80px);
+    }
+
+    /* Navbar */
+    nav {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px 8%;
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-card);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: #fff;
+    }
+
+    .brand img {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      object-fit: cover;
+      box-shadow: 0 4px 16px rgba(255, 107, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .brand-title {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #ffffff 40%, #fdba74 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-btn {
+      padding: 10px 22px;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 99px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-card);
+      color: #fff;
+      text-decoration: none;
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
+    }
+
+    /* Hero Section */
+    .hero {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      padding: 80px 20px 60px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      border-radius: 99px;
+      background: rgba(255, 107, 0, 0.1);
+      border: 1px solid rgba(255, 107, 0, 0.3);
+      color: #fdba74;
+      font-size: 13.5px;
+      font-weight: 600;
+      margin-bottom: 28px;
+    }
+
+    .hero-title {
+      font-size: clamp(38px, 6vw, 62px);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -1.5px;
+      margin-bottom: 24px;
+      background: linear-gradient(180deg, #ffffff 30%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-title span {
+      background: linear-gradient(135deg, #ff6b00 0%, #ffa500 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-desc {
+      font-size: clamp(16px, 2.2vw, 19px);
+      color: var(--text-muted);
+      line-height: 1.6;
+      max-width: 680px;
+      margin: 0 auto 40px;
+    }
+
+    /* Ana İndirme Butonu */
+    .download-cta {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .btn-download {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      background: linear-gradient(135deg, #ff6b00 0%, #e05500 100%);
+      color: #ffffff;
+      font-size: 19px;
+      font-weight: 700;
+      padding: 20px 48px;
+      border-radius: 16px;
+      text-decoration: none;
+      box-shadow: 0 10px 30px var(--primary-glow), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+    }
+
+    .btn-download i.fa-windows {
+      font-size: 26px;
+    }
+
+    .btn-download:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 16px 40px rgba(255, 107, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+      background: linear-gradient(135deg, #ff7a1a 0%, #ea5c00 100%);
+    }
+
+    .btn-download:active {
+      transform: translateY(-1px) scale(0.99);
+    }
+
+    .download-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 13.5px;
+      color: var(--text-muted);
+    }
+
+    .download-meta span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Özellik Kartları Grid */
+    .features-section {
+      position: relative;
+      z-index: 10;
+      max-width: 1100px;
+      margin: 40px auto 90px;
+      padding: 0 24px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      gap: 22px;
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      padding: 28px;
+      border-radius: 20px;
+      backdrop-filter: blur(16px);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--border-glow);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .feature-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: rgba(255, 107, 0, 0.12);
+      color: #ff6b00;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255, 107, 0, 0.2);
+    }
+
+    .feature-card:nth-child(2) .feature-icon {
+      background: rgba(59, 130, 246, 0.12);
+      color: #3b82f6;
+      border-color: rgba(59, 130, 246, 0.2);
+    }
+
+    .feature-card:nth-child(3) .feature-icon {
+      background: rgba(16, 185, 129, 0.12);
+      color: #10b981;
+      border-color: rgba(16, 185, 129, 0.2);
+    }
+
+    .feature-title {
+      font-size: 19px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: #fff;
+    }
+
+    .feature-desc {
+      font-size: 14.5px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* Footer */
+    footer {
+      margin-top: auto;
+      border-top: 1px solid var(--border-card);
+      padding: 30px 20px;
+      text-align: center;
+      font-size: 14px;
+      color: #64748b;
+      position: relative;
+      z-index: 10;
+    }
+
+    footer a {
+      color: #fdba74;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Arka Plan Efektleri -->
+  <div class="bg-blobs">
+    <div class="blob-1"></div>
+    <div class="blob-2"></div>
+  </div>
+
+  <!-- Üst Menü -->
+  <nav>
+    <a href="#" class="brand">
+      <img src="logo.png" alt="Furnace Hosting Logo">
+      <span class="brand-title">Furnace Hosting</span>
+    </a>
+    <a href="https://drive.google.com/file/d/1ckSu4qWckrIv28oCreEW0Q8bsDTCD60R/view?usp=sharing" target="_blank" class="nav-btn">
+      <i class="fa-brands fa-windows"></i> İndir
+    </a>
+  </nav>
+
+  <!-- Hero Bölümü -->
+  <section class="hero">
+    <div class="hero-badge">
+      <i class="fa-solid fa-sparkles"></i> Sürüm v1.3.0 Şimdi Yayında
+    </div>
+    <h1 class="hero-title">
+      Minecraft Sunucunu <span>Tek Tıkla</span> Yönet ve Dünyaya Aç
+    </h1>
+    <p class="hero-desc">
+      Port açma zahmetine ve karmaşık panel ayarlarına son. Furnace Hosting; dahili Playit.gg tüneli, tek tıkla eklenti & mod mağazası, canlı konsol ve sesli sohbet desteğiyle sunucunu dakikalar içinde hazır eder.
+    </p>
+
+    <!-- İndirme Çağrısı -->
+    <div class="download-cta">
+      <a href="https://drive.google.com/file/d/1ckSu4qWckrIv28oCreEW0Q8bsDTCD60R/view?usp=sharing" target="_blank" class="btn-download">
+        <i class="fa-brands fa-windows"></i>
+        <span>Windows İçin İndir</span>
+      </a>
+      <div class="download-meta">
+        <span><i class="fa-solid fa-check"></i> Windows 10 / 11 Destekli</span>
+        <span>•</span>
+        <span><i class="fa-solid fa-shield-halved"></i> Güvenli & Ücretsiz</span>
+        <span>•</span>
+        <span><i class="fa-solid fa-microchip"></i> 64-bit Kurulum Sihirbazı</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Özellikler -->
+  <section class="features-section">
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fa-solid fa-globe"></i>
+        </div>
+        <h3 class="feature-title">Port Açmadan Paylaş</h3>
+        <p class="feature-desc">
+          Modem ayarlarıyla uğraşmadan, entegre Playit.gg altyapısı sayesinde arkadaşlarına anında sabit bir IP vererek sunucuna katılmalarını sağla.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fa-solid fa-puzzle-piece"></i>
+        </div>
+        <h3 class="feature-title">Eklenti & Mod Mağazası</h3>
+        <p class="feature-desc">
+          Spigot, Paper, Purpur ve Fabric eklentilerini doğrudan Modrinth ve CurseForge üzerinden tek tıkla ara, indir ve kur.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fa-solid fa-microphone-lines"></i>
+        </div>
+        <h3 class="feature-title">Simple Voice Chat Desteği</h3>
+        <p class="feature-desc">
+          Oyun içi yakınlık bazlı sesli sohbet için gerekli özel UDP tünelini ve eklenti portunu tek tıkla otomatik olarak yapılandır.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2026 <strong>Furnace Hosting</strong>. Tüm hakları saklıdır. Minecraft Mojang Synergies AB'nin tescilli ticari markasıdır.</p>
+  </footer>
+
+</body>
+</html>
