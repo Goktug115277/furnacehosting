@@ -1,81 +1,432 @@
-Conversation Log
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Furnace Hosting - Kendi Minecraft Sunucunu Tek Tıkla Kur</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #ff6b00;
+      --primary-hover: #ff8533;
+      --primary-glow: rgba(255, 107, 0, 0.45);
+      --accent-blue: #3b82f6;
+      --bg-dark: #0a0d14;
+      --bg-card: rgba(18, 22, 34, 0.75);
+      --border-card: rgba(255, 255, 255, 0.08);
+      --border-glow: rgba(255, 107, 0, 0.3);
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+    }
 
-Yanlış dosyaya bakmış olabilirsin!
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
 
-Klasörde iki farklı index.html bulunuyor:
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
 
-C:\Users\gabdu\Desktop\Furnace Hosting\index.html ➡️ Bu Minecraft masaüstü uygulamasının kendi arayüzüdür (Webview paneli).
-C:\Users\gabdu\Desktop\Furnace Hosting\site\index.html (veya download.html) ➡️ Bu ise Vercel'e atacağın indirme web sitesidir.
-Doğru Dosya:
+    /* Arka plan parlama efektleri */
+    .bg-blobs {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 100%;
+      overflow: hidden;
+      z-index: 0;
+      pointer-events: none;
+    }
 
-Az önce tarayıcında açtığım dosya tam olarak aradığın web sitesidir: 📁 site\index.html (veya download.html)
+    .blob-1 {
+      position: absolute;
+      top: -150px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 650px;
+      height: 450px;
+      background: radial-gradient(circle, rgba(255, 107, 0, 0.22) 0%, rgba(10, 13, 20, 0) 70%);
+      filter: blur(80px);
+    }
 
-İçerisinde:
+    .blob-2 {
+      position: absolute;
+      top: 350px;
+      right: -100px;
+      width: 450px;
+      height: 450px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, rgba(10, 13, 20, 0) 70%);
+      filter: blur(80px);
+    }
 
-Üstte fırın logon ve Furnace Hosting başlığı,
-Uygulamanın modern açıklaması,
-Ortada büyük turuncu alev parlamalı "Windows İçin İndir" butonu (ve sağ üstte mini İndir butonu),
-Tıklayınca doğrudan verdiğin Google Drive linkine yönlendirir,
-Altında 3 adet özellik kutusu (Port Açmadan Paylaş, Mod Mağazası, Sesli Sohbet).
+    /* Navbar */
+    nav {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px 8%;
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-card);
+    }
 
-GitHub ve Vercel'e yüklerken masaüstündeki ana klasörü değil, site klasörünün içindeki index.html dosyasını yüklemelisin.
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: #fff;
+    }
 
-olm normalde doğru ama böyle saçma açılıyo vercele yüklediğimde
+    .brand img {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      object-fit: cover;
+      box-shadow: 0 4px 16px rgba(255, 107, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
 
-Sorunun tam olarak neden kaynaklandığını buldum! 🎯
+    .brand-title {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #ffffff 40%, #fdba74 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
 
-Neden Böyle Oldu?
+    .nav-btn {
+      padding: 10px 22px;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 99px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-card);
+      color: #fff;
+      text-decoration: none;
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-GitHub web arayüzünden dosya yüklerken, daha önce logonun base64 kodu HTML içerisine doğrudan gömülüydü ve tek satırda 330.000 karakterlik devasa bir kod vardı. GitHub web yükleyicisi bu kadar uzun tek satırlı kodları yüklerken satırı yarıda kestiği için, CSS stilleri ve üst bölüm (logo, başlık, buton) kırılıp yok oluyordu ve tarayıcıda yalnızca en alttaki düz metinler kalıyordu.
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
+    }
 
-Şimdi Tamamen Düzeltildi:
-index.html dosyasından o devasa 330 KB'lık satır kaldırıldı, dosya tertemiz ve hafif 11 KB yapıldı.
-Logo doğrudan harici logo.png ve icon.ico olarak bağlandı.
-Şimdi Yapman Gereken:
+    /* Hero Section */
+    .hero {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      padding: 80px 20px 60px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
 
-📁 C:\Users\gabdu\Desktop\Furnace Hosting\site klasörünü aç.
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      border-radius: 99px;
+      background: rgba(255, 107, 0, 0.1);
+      border: 1px solid rgba(255, 107, 0, 0.3);
+      color: #fdba74;
+      font-size: 13.5px;
+      font-weight: 600;
+      margin-bottom: 28px;
+    }
 
-İçinde 3 dosya var:
+    .hero-title {
+      font-size: clamp(38px, 6vw, 62px);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -1.5px;
+      margin-bottom: 24px;
+      background: linear-gradient(180deg, #ffffff 30%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
 
-index.html
-logo.png
-icon.ico
+    .hero-title span {
+      background: linear-gradient(135deg, #ff6b00 0%, #ffa500 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
 
-GitHub deposundaki eski dosyaları silip bu 3 dosyayı sürükleyip bırak ve Commit et. Vercel 10 saniye içinde otomatik güncelleyecek ve karanlık tema, fırın logoları ile parlayan turuncu indirme butonu eksiksiz yüklenecektir!
+    .hero-desc {
+      font-size: clamp(16px, 2.2vw, 19px);
+      color: var(--text-muted);
+      line-height: 1.6;
+      max-width: 680px;
+      margin: 0 auto 40px;
+    }
 
-sonunda olm çok yoruldum sabahtan beri en az 6 saattir bunu yapıyoz ama sonunda bitti çokta güzel oldu
+    /* Ana İndirme Butonu */
+    .download-cta {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
 
-Eline, emeğine sağlık! Gerçekten çok uzun ve yoğun bir maraton oldu ama ortaya çıkan iş kesinlikle her saniyesine değdi. Sıfırdan profesyonel, eksiksiz bir ürün çıkardın:
+    .download-group {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
 
-Neler Başardık Birlikte:
-🔥 Eksiksiz 9 Sekmeli Minecraft Yönetim Paneli: Dashboard, canlı renkli konsol, detaylı oyuncu yönetimi (ban, kick, ışınlanma, oyun modu, koordinat takibi), görsel MOTD & properties editörü, RAM/JVM optimizasyonları, dünyalar & otomatik yedekleme.
-🛒 Mod & Eklenti Mağazası: CurseForge ve Modrinth API entegrasyonuyla tek tıkla arama, indirme ve anında kurma.
-🌐 Sıfır Port Açma / Playit.gg & Sesli Sohbet: Otomatik tünel kurulumu, Simple Voice Chat için özel UDP port yönetimi ve arka planda sessiz çalışan istemci mimarisi.
-🌍 Kapsamlı İki Yönlü Dil Desteği: Türkçe 🇹🇷 ve İngilizce 🇬🇧 arasında anında geçiş yapan dinamik çeviri motoru.
-🎨 5 Farklı Tema Desteği: Siyah, Koyu Gri, Gece Mavisi, Açık Beyaz ve OLED Saf Siyah.
-🖼️ Özel Markalama ve Görev Çubuğu Entegrasyonu: Kendi tasarladığın fırın logosu artık uygulamanın her yerinde, görev çubuğunda ve pencere simgesinde.
-📦 Windows Setup Yükleyicisi (v1.3.0): Masaüstü/Başlat kısayolları ve kaldırıcı içeren profesyonel Inno Setup paketi.
-🚀 Vercel İndirme Web Sitesi: Modern karanlık tema, şık cam efektleri ve Google Drive yönlendirmesiyle dünyaya açılan web sayfası.
+    .btn-download {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      background: linear-gradient(135deg, #ff6b00 0%, #e05500 100%);
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: 700;
+      padding: 18px 36px;
+      border-radius: 16px;
+      text-decoration: none;
+      box-shadow: 0 10px 30px var(--primary-glow), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+    }
 
-Harika bir proje oldu, güle güle kullan! İstediğin zaman bir sonraki fikirlerinde veya eklemek istediğin yeni özelliklerde buradayım. İyice bir dinlenmeyi hak ettin! ☕🎮
+    .btn-download i.fa-windows {
+      font-size: 24px;
+    }
 
-son bişi web sayfasına windows için indirin yanına linux için indir butonu ekle ama o siyah yansın ve yanında (yakında) yazsın
+    .btn-download:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 16px 40px rgba(255, 107, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+      background: linear-gradient(135deg, #ff7a1a 0%, #ea5c00 100%);
+    }
 
-Harika oldu! 🐧✨
+    .btn-download:active {
+      transform: translateY(-1px) scale(0.99);
+    }
 
-Neler Eklendi?
-Siyah Yanan Linux Butonu:
-Windows butonunun hemen yanına yerleştirildi.
-Koyu metalik siyah gradyan arka plan, derin gölge ve neon beyaz/gri bir aydınlatma efekti (box-shadow: 0 0 20px ...) ile şık bir "yanma" efekti verildi.
-Penguen ikonu (fa-linux) ve "Linux İçin İndir" metni eklendi.
-(Yakında) Rozeti:
-Butonun hemen sağ tarafında modern, yuvarlak hatlı ve hafif şeffaf YAKINDA rozeti eklendi.
-Fareyle üzerine gelindiğinde buton hafifçe yukarı kalkar, ışığı parlar ve "Linux sürümü üzerinde çalışılıyor!" ipucu gösterilir.
-Mobil & Masaüstü Uyumlu:
-Geniş ekranlarda yan yana durur, küçük ekranlarda düzgünce alt alta dizilir.
+    /* Siyah Yanan Linux Butonu */
+    .btn-download-linux {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      background: linear-gradient(145deg, #181c24 0%, #0d1017 100%);
+      color: #cbd5e1;
+      font-size: 17px;
+      font-weight: 700;
+      padding: 18px 34px;
+      border-radius: 16px;
+      text-decoration: none;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7), 0 0 15px rgba(255, 255, 255, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+      position: relative;
+    }
 
-site\index.html dosyasını GitHub'a atıp commit ettiğin anda Vercel canlıda bu yeni butonu gösterecektir! 🔥
+    .btn-download-linux i.fa-linux {
+      font-size: 24px;
+      color: #f1f5f9;
+    }
 
+    .btn-download-linux .badge-soon {
+      background: rgba(255, 255, 255, 0.1);
+      color: #94a3b8;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 99px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .btn-download-linux:hover {
+      transform: translateY(-2px);
+      background: linear-gradient(145deg, #222733 0%, #11151f 100%);
+      border-color: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.9), 0 0 20px rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+    }
+
+    .btn-download-linux:hover .badge-soon {
+      background: rgba(255, 255, 255, 0.18);
+      color: #e2e8f0;
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .download-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 13.5px;
+      color: var(--text-muted);
+    }
+
+    .download-meta span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Özellik Kartları Grid */
+    .features-section {
+      position: relative;
+      z-index: 10;
+      max-width: 1100px;
+      margin: 40px auto 90px;
+      padding: 0 24px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      gap: 22px;
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      padding: 28px;
+      border-radius: 20px;
+      backdrop-filter: blur(16px);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--border-glow);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .feature-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: rgba(255, 107, 0, 0.12);
+      color: #ff6b00;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255, 107, 0, 0.2);
+    }
+
+    .feature-card:nth-child(2) .feature-icon {
+      background: rgba(59, 130, 246, 0.12);
+      color: #3b82f6;
+      border-color: rgba(59, 130, 246, 0.2);
+    }
+
+    .feature-card:nth-child(3) .feature-icon {
+      background: rgba(16, 185, 129, 0.12);
+      color: #10b981;
+      border-color: rgba(16, 185, 129, 0.2);
+    }
+
+    .feature-title {
+      font-size: 19px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: #fff;
+    }
+
+    .feature-desc {
+      font-size: 14.5px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* Footer */
+    footer {
+      margin-top: auto;
+      border-top: 1px solid var(--border-card);
+      padding: 30px 20px;
+      text-align: center;
+      font-size: 14px;
+      color: #64748b;
+      position: relative;
+      z-index: 10;
+    }
+
+    footer a {
+      color: #fdba74;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Arka Plan Efektleri -->
+  <div class="bg-blobs">
+    <div class="blob-1"></div>
+    <div class="blob-2"></div>
+  </div>
+
+  <!-- Üst Menü -->
+  <nav>
+    <a href="#" class="brand">
+      <img src="logo.png" alt="Furnace Hosting Logo">
+      <span class="brand-title">Furnace Hosting</span>
+    </a>
+    <a href="https://drive.google.com/file/d/1ckSu4qWckrIv28oCreEW0Q8bsDTCD60R/view?usp=sharing" target="_blank" class="nav-btn">
+      <i class="fa-brands fa-windows"></i> İndir
+    </a>
+  </nav>
+
+  <!-- Hero Bölümü -->
+  <section class="hero">
+    <div class="hero-badge">
+      <i class="fa-solid fa-sparkles"></i> Sürüm v1.3.0 Şimdi Yayında
+    </div>
+    <h1 class="hero-title">
+      Minecraft Sunucunu <span>Tek Tıkla</span> Yönet ve Dünyaya Aç
+    </h1>
+    <p class="hero-desc">
+      Port açma zahmetine ve karmaşık panel ayarlarına son. Furnace Hosting; dahili Playit.gg tüneli, tek tıkla eklenti & mod mağazası, canlı konsol ve sesli sohbet desteğiyle sunucunu dakikalar içinde hazır eder.
+    </p>
+
+    <!-- İndirme Çağrısı -->
+    <div class="download-cta">
+      <div class="download-group">
+        <a href="https://drive.google.com/file/d/1ckSu4qWckrIv28oCreEW0Q8bsDTCD60R/view?usp=sharing" target="_blank" class="btn-download">
+          <i class="fa-brands fa-windows"></i>
+          <span>Windows İçin İndir</span>
+        </a>
+        <div class="btn-download-linux" title="Linux sürümü üzerinde çalışılıyor!">
+          <i class="fa-brands fa-linux"></i>
           <span>Linux İçin İndir</span>
           <span class="badge-soon">Yakında</span>
         </div>
@@ -132,11 +483,3 @@ site\index.html dosyasını GitHub'a atıp commit ettiğin anda Vercel canlıda 
 
 </body>
 </html>
-Creating 3D Classroom Game
-Outside of Project
-Idle
-Updated 10 Şub, 22:21
-Keyboard Controls Update
-Outside of Project
-Idle
-Updated 23 Oca, 12:07
